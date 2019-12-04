@@ -1,0 +1,27 @@
+{
+  "title": {
+    "type": "text",
+    "name": "title",
+    "placeholder": "Title",
+    "validations": {}
+  },
+  "description": {
+    "type": "textarea",
+    "name": "description",
+    "placeholder": "Description",
+    "style": {"height":"100px", "width":"300px"},
+    "validations": {}
+  },
+  "userID": {
+    "type": "select",
+    "name": "userID",
+    "label": "Select User",
+    "validations": {}
+  },
+  "active": {
+    "type": "checkbox",
+    "name": "active",
+    "label": "Active/Inactive",
+    "validations": {}
+  }
+}

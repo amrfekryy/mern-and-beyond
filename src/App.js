@@ -1,26 +1,132 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import './App.css'
+import React, { Component } from 'react'
+import { connect } from 'react-redux'
+import { setUsers, setTasks } from './actions'
+import { createUsers } from './helpers'
+import { Formik, Form } from 'formik'
+import { map } from 'lodash'
+// import * as Yup from 'yup'
+import * as taskFormJSON from './taskForm.json'
+import MiddleComponent from './components/MiddleComponent'
+import AddSubtaskModal from './components/addSubtaskModal'
+import { Button } from 'antd'
+import { ultimateMapDispatchToProps } from './helpers/map_dispatch'
+import { apply } from './helpers/functions/index'
+import { funcSettings } from './helpers/functions/funcSettings'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+import Gun from 'gun/gun'
+import { gunExample } from './gunPractice'
+
+class App extends Component {
+  constructor (props) {
+    super(props)
+    // add users data to usersReducer
+    const usersNames = ['Amr', 'Fekry', 'Ali']
+    map(usersNames, (title) => {
+      props.setData('users', {title})
+    })
+  }
+
+  onFormSubmit = (values) => {
+    console.log('Values submitted from subtasks form: ', values)
+    // dispatch 'setTask' action
+    this.props.setData('tasks', {...values})
+  }
+
+  renderForm = (FormikProps) => {
+    // console.log('FormikProps: ', FormikProps)
+    return (
+      <>
+        <Form>
+          <br />
+
+          { // create form dynamically using fileds.json and MiddleComponent
+            map(taskFormJSON.default, (fieldSettingsFromJSON, index) => {
+              return (
+                <>
+                  <MiddleComponent key={index} 
+                    // optionsFor='users'
+                    selectOptions={this.props.users} 
+                    fieldSettingsFromJSON={{...fieldSettingsFromJSON}} 
+                  /><br /><br />
+                </>
+              )
+            })
+          }
+          {/* <Field type="checkbox" name="active" value="true" checked /> */}
+          <button type='submit'>Add Task</button>
+        </Form>
+        <AddSubtaskModal />
+      </>
+    )
+  }
+
+  render () {
+
+    gunExample()
+    
+    return (
+      <>
+
+        {/* <pre>{JSON.stringify(fieldsJSON, null, 2)}</pre> */}
+
+        <Formik
+          initialValues={{
+            title: '',
+            description: '',
+            userID: '',
+            active: true
+          }}
+          onSubmit={this.onFormSubmit}
         >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+          {this.renderForm}
+        </Formik>
+        
+        <br/><br/>
+        <ul> 
+          { // Show tasks as list items
+            map(this.props.tasks, (value, taskKey) => {
+              return (
+                <>
+                  <li key={taskKey}> {value.title} <strong>{apply(funcSettings(taskKey))}</strong></li>
+                  <ul>np
+                    { map(this.props.subTasks, (value, subTaskKey) => {
+                        if (value.taskID === taskKey) {
+                          return <><li key={subTaskKey}> {value.subtask} </li></> 
+                        }
+                      }) 
+                    }
+                  </ul>
+                </>
+              )
+            })
+          }        
+        </ul>
+
+      </>
+    )
+  }
 }
 
-export default App;
+// map props to data from redux state
+const mapStateToProps = (state) => {
+  return {
+    users: state.usersReducer.data,
+    tasks: state.tasksReducer.data,
+    subTasks: state.subTasksReducer.data
+  }
+}
+
+// // map props to action-dispatching functions
+// const mapDispatchToProps = (dispatch) => {
+//   return {
+//     dispatch_setUsers: (data) => dispatch(setUsers(data)),
+//     dispatch_setTasks: (data) => dispatch(setTasks(data))
+//   }
+// }
+
+// pass mapped props to App upon export
+export default connect(
+  mapStateToProps,
+  ultimateMapDispatchToProps
+)(App)

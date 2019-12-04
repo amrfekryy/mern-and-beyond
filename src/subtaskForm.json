@@ -1,0 +1,14 @@
+{
+  "title": {
+    "type": "text",
+    "name": "subtask",
+    "placeholder": "Add Subtask",
+    "validations": {}
+  },
+  "taskID": {
+    "type": "select",
+    "name": "taskID",
+    "label": "Select Task",
+    "validations": {}
+  }
+}
