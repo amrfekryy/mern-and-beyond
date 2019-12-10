@@ -14,23 +14,41 @@ import { ultimateMapDispatchToProps } from './helpers/map_dispatch'
 import { apply } from './helpers/functions/index'
 import { funcSettings } from './helpers/functions/funcSettings'
 
-import Gun from 'gun/gun'
-import { gunExample } from './gunPractice'
+// import { addTaskToGun, syncFromGunToRedux_tasks } from './gunHandlers'
+import { gun, addToGun, syncFromGunToRedux } from './gunHandlers'
+
 
 class App extends Component {
   constructor (props) {
     super(props)
-    // add users data to usersReducer
-    const usersNames = ['Amr', 'Fekry', 'Ali']
-    map(usersNames, (title) => {
-      props.setData('users', {title})
+
+    // add users data to gun for the first time only and sync to redux
+    gun.get('users').once(obj => {
+      if (!obj) {
+        const usersNames = ['Amr', 'Fekry', 'Ali']
+        map(usersNames, (title) => {
+            addToGun('users', {title})
+        })
+      }
+      syncFromGunToRedux('users', props.setData)
     })
+
+    // or:
+    // props.setData('users', {title: 'Amr', id: 'aaaaaaaaaaa'})
+    // props.setData('users', {title: 'Fekry', id: 'bbbbbbbbbbb'})
+    // props.setData('users', {title: 'Ali', id: 'ccccccccccc'})
+
+
+    syncFromGunToRedux('tasks', props.setData)
   }
 
   onFormSubmit = (values) => {
-    console.log('Values submitted from subtasks form: ', values)
-    // dispatch 'setTask' action
-    this.props.setData('tasks', {...values})
+    // console.log('Values submitted from tasks form: ', values)
+    // // dispatch 'setTask' action
+    // this.props.setData('tasks', {...values})
+    
+    addToGun('tasks', {...values})
+  
   }
 
   renderForm = (FormikProps) => {
@@ -62,9 +80,8 @@ class App extends Component {
   }
 
   render () {
-
-    gunExample()
     
+    // gunExample()
     return (
       <>
 
@@ -89,7 +106,7 @@ class App extends Component {
               return (
                 <>
                   <li key={taskKey}> {value.title} <strong>{apply(funcSettings(taskKey))}</strong></li>
-                  <ul>np
+                  <ul>
                     { map(this.props.subTasks, (value, subTaskKey) => {
                         if (value.taskID === taskKey) {
                           return <><li key={subTaskKey}> {value.subtask} </li></> 

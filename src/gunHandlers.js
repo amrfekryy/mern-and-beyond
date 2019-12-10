@@ -3,9 +3,36 @@ import { uuidv4 } from './helpers'
 import { map } from 'lodash'
 // require('gun/lib/open.js')
 
-export const gunExample = () => {
+// initialize Gun
+export const gun = Gun()
 
-  var gun = Gun()
+export const syncFromGunToRedux = (app, actionDispatcher) => {
+  /* triggers an action dispatcher (i.e. setData) upon adding/updating data */
+
+  gun.get(app).map().on(data => {
+    delete data._ // delete extra data from gun
+    actionDispatcher(app, data)
+  })
+}
+
+export const addToGun = (app, formData) => {
+  /* adds form data + a uuid to gun as app element */
+
+  // set counter for each app to name app elements
+  gun.get('counters').get(`${app}Count`).once(countInGUN => {
+    // calculate count of this app element based on gun
+    const currentCount = countInGUN ? countInGUN += 1 : 1
+    // initialize/update count in gun
+    gun.get('counters').get(`${app}Count`).put(currentCount)
+    // create node for the app element and connect it to app
+    const appElement = gun.get(`${app.slice(0, -1) + currentCount}`).put({ ...formData, id: uuidv4() })
+    gun.get(app).set(appElement)
+  })
+
+  // gun.get(app).set({ ...formData, id: uuidv4() })
+}
+
+export const gunExample = () => {
 
   // // create root and users nodes
   // const root = gun.get('root')

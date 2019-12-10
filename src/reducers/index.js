@@ -1,15 +1,17 @@
 import { combineReducers } from 'redux'
-import { uuidv4 } from '../helpers'
+// import { uuidv4 } from '../helpers'
 import { map, upperFirst, cloneDeep, get } from 'lodash'
 
 // create a list with reducers names
 const reducerNames = ['users', 'tasks', 'subTasks']
 
-// separate common actions logic into functions (handlers)
 const setData = (state, action) => {
+  /* common logic between actions that sets data for 'users', 'tasks', 'subTasks' */
+
+  // copy current state
   const newState = cloneDeep(state)
-  const newUUID = uuidv4()
-  newState.data[newUUID] = { ...action.payload, id: newUUID }
+  // add a new property (uuid: { ...data, id: uuid})
+  newState.data[action.payload.id] = { ...action.payload }
   return newState
 }
 

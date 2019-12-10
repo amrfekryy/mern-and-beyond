@@ -8,8 +8,16 @@ import { connect } from 'react-redux'
 import { setSubTasks } from '../actions'
 import { ultimateMapDispatchToProps } from '../helpers/map_dispatch'
 
+// import { addSubTaskToGun, syncFromGunToRedux_subTasks } from '../gunHandlers'
+import { addToGun, syncFromGunToRedux } from '../gunHandlers'
+
 class AddSubtaskModal extends React.Component {
-  state = { visible: false }
+  constructor (props) {
+    super(props)
+    syncFromGunToRedux('subTasks', props.setData)
+    this.state = { visible: false }
+  }
+
 
   showModal = () => {
     this.setState({
@@ -26,8 +34,11 @@ class AddSubtaskModal extends React.Component {
 
   onFormSubmit = (values) => {
     console.log('Values submitted from subtasks form: ', values)
-    // dispatch 'setSubTasks' action
-    this.props.setData('subTasks', {...values})
+    // // dispatch 'setSubTasks' action
+    // this.props.setData('subTasks', {...values})
+    
+    addToGun('subTasks', {...values})
+    
     this.setState({
       visible: false,
     })
