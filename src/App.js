@@ -9,10 +9,9 @@ import { map } from 'lodash'
 import * as taskFormJSON from './taskForm.json'
 import MiddleComponent from './components/MiddleComponent'
 import AddSubtaskModal from './components/addSubtaskModal'
+import DataNestedList from './components/Collapse'
 import { Button } from 'antd'
 import { ultimateMapDispatchToProps } from './helpers/map_dispatch'
-import { apply } from './helpers/functions/index'
-import { funcSettings } from './helpers/functions/funcSettings'
 
 // import { addTaskToGun, syncFromGunToRedux_tasks } from './gunHandlers'
 import { gun, addToGun, syncFromGunToRedux } from './gunHandlers'
@@ -73,8 +72,8 @@ class App extends Component {
           }
           {/* <Field type="checkbox" name="active" value="true" checked /> */}
           <button type='submit'>Add Task</button>
+          <AddSubtaskModal />
         </Form>
-        <AddSubtaskModal />
       </>
     )
   }
@@ -98,28 +97,28 @@ class App extends Component {
         >
           {this.renderForm}
         </Formik>
-        
         <br/><br/>
-        <ul> 
+        <DataNestedList/>
+        {/* <ul>
           { // Show tasks as list items
             map(this.props.tasks, (value, taskKey) => {
               return (
                 <>
                   <li key={taskKey}> {value.title} <strong>{apply(funcSettings(taskKey))}</strong></li>
                   <ul>
-                    { map(this.props.subTasks, (value, subTaskKey) => {
+                    { // Show subTasks as list items
+                      map(this.props.subTasks, (value, subTaskKey) => {
                         if (value.taskID === taskKey) {
-                          return <><li key={subTaskKey}> {value.subtask} </li></> 
+                          return <><li key={subTaskKey}> {value.subtask} </li></>
                         }
-                      }) 
+                      })
                     }
                   </ul>
                 </>
               )
             })
           }        
-        </ul>
-
+        </ul> */}
       </>
     )
   }
