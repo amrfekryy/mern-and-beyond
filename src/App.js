@@ -9,11 +9,12 @@ import { map } from 'lodash'
 import * as taskFormJSON from './taskForm.json'
 import MiddleComponent from './components/MiddleComponent'
 import AddSubtaskModal from './components/addSubtaskModal'
-import DataNestedList from './components/Collapse'
+import DataList from './components/RecursiveListComponent'
 import { Button } from 'antd'
 import { ultimateMapDispatchToProps } from './helpers/map_dispatch'
 
-// import { addTaskToGun, syncFromGunToRedux_tasks } from './gunHandlers'
+import { apply } from './helpers/functions/index'
+
 import { gun, addToGun, syncFromGunToRedux } from './gunHandlers'
 
 
@@ -39,7 +40,50 @@ class App extends Component {
 
 
     syncFromGunToRedux('tasks', props.setData)
+
   }
+
+
+  stateDataNested = () => {
+    
+    const data = []
+  
+    map(this.props.users, (userData) => {
+      
+      const user = { ...userData, children: [] }
+      data.push(user)
+      
+      const relatedTasks = apply({
+        key: 'filtering',
+        path: 'tasksReducer.data',
+        params: { userID: userData.id }
+      })
+  
+      map(relatedTasks, (taskData) => {
+        const relatedSubTasks = apply({
+          key: 'filtering',
+          path: 'subTasksReducer.data',
+          params: { taskID: taskData.id }
+        })
+  
+        const task = { ...taskData, children: relatedSubTasks }
+        user.children.push(task)
+      
+      })
+    })
+    return data
+  }
+  
+  recursiveDisplayPlan = () => ({
+    whichData: 'users',
+    children: {
+      whichData: 'tasks',
+      children: {
+        whichData: 'subTasks'
+      }
+    }
+  })
+
 
   onFormSubmit = (values) => {
     // console.log('Values submitted from tasks form: ', values)
@@ -52,6 +96,7 @@ class App extends Component {
 
   renderForm = (FormikProps) => {
     // console.log('FormikProps: ', FormikProps)
+    console.log(this.stateDataNested())
     return (
       <>
         <Form>
@@ -72,8 +117,8 @@ class App extends Component {
           }
           {/* <Field type="checkbox" name="active" value="true" checked /> */}
           <button type='submit'>Add Task</button>
-          <AddSubtaskModal />
         </Form>
+        <AddSubtaskModal />
       </>
     )
   }
@@ -98,27 +143,8 @@ class App extends Component {
           {this.renderForm}
         </Formik>
         <br/><br/>
-        <DataNestedList/>
-        {/* <ul>
-          { // Show tasks as list items
-            map(this.props.tasks, (value, taskKey) => {
-              return (
-                <>
-                  <li key={taskKey}> {value.title} <strong>{apply(funcSettings(taskKey))}</strong></li>
-                  <ul>
-                    { // Show subTasks as list items
-                      map(this.props.subTasks, (value, subTaskKey) => {
-                        if (value.taskID === taskKey) {
-                          return <><li key={subTaskKey}> {value.subtask} </li></>
-                        }
-                      })
-                    }
-                  </ul>
-                </>
-              )
-            })
-          }        
-        </ul> */}
+        <DataList children={this.stateDataNested()} />
+        {/* <MapPresentation /> */}
       </>
     )
   }
@@ -133,13 +159,15 @@ const mapStateToProps = (state) => {
   }
 }
 
-// // map props to action-dispatching functions
-// const mapDispatchToProps = (dispatch) => {
-//   return {
-//     dispatch_setUsers: (data) => dispatch(setUsers(data)),
-//     dispatch_setTasks: (data) => dispatch(setTasks(data))
-//   }
-// }
+/*
+// map props to action-dispatching functions
+const mapDispatchToProps = (dispatch) => {
+  return {
+    dispatch_setUsers: (data) => dispatch(setUsers(data)),
+    dispatch_setTasks: (data) => dispatch(setTasks(data))
+  }
+}
+*/
 
 // pass mapped props to App upon export
 export default connect(

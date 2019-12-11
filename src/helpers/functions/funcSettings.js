@@ -1,6 +1,6 @@
 export const funcSettings = (taskID) => ({
-  path: 'subTasksReducer.data',
   key: 'filtering',
+  path: 'subTasksReducer.data',
   params: { taskID: taskID },
   then: {
     key: 'counting',

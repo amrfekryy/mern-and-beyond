@@ -2,7 +2,7 @@ import React from 'react'
 import { Modal, Button } from 'antd'
 import { Formik, Form } from 'formik'
 import { map } from 'lodash'
-import * as subtaskFormJSON from '../subtaskForm.json'
+import * as subTaskFormJSON from '../subTaskForm.json'
 import MiddleComponent from './MiddleComponent'
 import { connect } from 'react-redux'
 import { setSubTasks } from '../actions'
@@ -50,7 +50,7 @@ class AddSubtaskModal extends React.Component {
         <br />
 
         { // create form dynamically using fileds.json and MiddleComponent
-          map(subtaskFormJSON.default, (fieldSettingsFromJSON, index) => {
+          map(subTaskFormJSON.default, (fieldSettingsFromJSON, index) => {
             return (
               <>
                 <MiddleComponent key={index}
@@ -83,7 +83,7 @@ class AddSubtaskModal extends React.Component {
         >
           <Formik
             initialValues={{
-              subtask: '',
+              title: '',
               taskID: ''
             }}
             onSubmit={this.onFormSubmit}
