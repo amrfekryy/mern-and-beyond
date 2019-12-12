@@ -1,23 +1,37 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { map } from 'lodash'
-import { apply } from '../helpers/functions/index'
+import { get, map, filter, cloneDeep } from 'lodash'
 
 class DataList extends Component {
   render () {
-    // const { children } = this.props
+    const { state, plan, parentID } = this.props
+    let children = get(state, plan.path, {})
+    if (parentID) {
+      children = filter(children, { [plan.filterKey]: parentID })
+    }
+    // console.log('Plan: ', plan)
+    // console.log('State: ', state)
+    // console.log('parentID: ', parentID)
+    // console.log('Children: ', children)
     return (
       <ul>
-        {map(this.props.children, item => (
+        {map(children, child => (
           <>
-            <li key={item.id}>{item.title}</li>
-            {item.children && <DataList children={item.children} />}
+            <li key={child.id}>{child.title}</li>
+            {plan.then &&
+              <DataList state={state} plan={plan.then} parentID={child.id} />}
           </>
         ))}
       </ul>
     )
   }
 }
+
+const mapStateToProps = state => ({
+  state: cloneDeep(state)
+})
+
+export default connect(mapStateToProps)(DataList)
 
 // class MapPresentation extends Component {
 //   render () {
@@ -70,13 +84,3 @@ class DataList extends Component {
 //     )
 //   }
 // }
-
-const mapStateToProps = (state) => {
-  return {
-    users: state.usersReducer.data,
-    tasks: state.tasksReducer.data,
-    subTasks: state.subTasksReducer.data
-  }
-}
-
-export default connect(mapStateToProps)(DataList)

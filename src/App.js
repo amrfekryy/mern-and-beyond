@@ -43,47 +43,17 @@ class App extends Component {
 
   }
 
-
-  stateDataNested = () => {
-    
-    const data = []
-  
-    map(this.props.users, (userData) => {
-      
-      const user = { ...userData, children: [] }
-      data.push(user)
-      
-      const relatedTasks = apply({
-        key: 'filtering',
-        path: 'tasksReducer.data',
-        params: { userID: userData.id }
-      })
-  
-      map(relatedTasks, (taskData) => {
-        const relatedSubTasks = apply({
-          key: 'filtering',
-          path: 'subTasksReducer.data',
-          params: { taskID: taskData.id }
-        })
-  
-        const task = { ...taskData, children: relatedSubTasks }
-        user.children.push(task)
-      
-      })
-    })
-    return data
-  }
-  
   recursiveDisplayPlan = () => ({
-    whichData: 'users',
-    children: {
-      whichData: 'tasks',
-      children: {
-        whichData: 'subTasks'
+    path: 'usersReducer.data',
+    then: {
+      path: 'tasksReducer.data',
+      filterKey: 'userID',
+      then: {
+        path: 'subTasksReducer.data',
+        filterKey: 'taskID'
       }
     }
   })
-
 
   onFormSubmit = (values) => {
     // console.log('Values submitted from tasks form: ', values)
@@ -96,7 +66,6 @@ class App extends Component {
 
   renderForm = (FormikProps) => {
     // console.log('FormikProps: ', FormikProps)
-    console.log(this.stateDataNested())
     return (
       <>
         <Form>
@@ -143,7 +112,7 @@ class App extends Component {
           {this.renderForm}
         </Formik>
         <br/><br/>
-        <DataList children={this.stateDataNested()} />
+        <DataList plan={this.recursiveDisplayPlan()} />
         {/* <MapPresentation /> */}
       </>
     )
