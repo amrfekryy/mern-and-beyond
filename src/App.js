@@ -9,12 +9,9 @@ import { map } from 'lodash'
 import * as taskFormJSON from './taskForm.json'
 import MiddleComponent from './components/MiddleComponent'
 import AddSubtaskModal from './components/addSubtaskModal'
-import DataList from './components/RecursiveListComponent'
+import DataList from './components/RecursiveComponent/DataList'
 import { Button } from 'antd'
 import { ultimateMapDispatchToProps } from './helpers/map_dispatch'
-
-import { apply } from './helpers/functions/index'
-
 import { gun, addToGun, syncFromGunToRedux } from './gunHandlers'
 
 
@@ -27,33 +24,19 @@ class App extends Component {
       if (!obj) {
         const usersNames = ['Amr', 'Fekry', 'Ali']
         map(usersNames, (title) => {
-            addToGun('users', {title})
+          addToGun('users', {title})
         })
       }
-      syncFromGunToRedux('users', props.setData)
     })
+    syncFromGunToRedux('users', props.setData)
 
     // or:
     // props.setData('users', {title: 'Amr', id: 'aaaaaaaaaaa'})
     // props.setData('users', {title: 'Fekry', id: 'bbbbbbbbbbb'})
     // props.setData('users', {title: 'Ali', id: 'ccccccccccc'})
 
-
     syncFromGunToRedux('tasks', props.setData)
-
   }
-
-  recursiveDisplayPlan = () => ({
-    path: 'usersReducer.data',
-    then: {
-      path: 'tasksReducer.data',
-      filterKey: 'userID',
-      then: {
-        path: 'subTasksReducer.data',
-        filterKey: 'taskID'
-      }
-    }
-  })
 
   onFormSubmit = (values) => {
     // console.log('Values submitted from tasks form: ', values)
@@ -93,6 +76,7 @@ class App extends Component {
   }
 
   render () {
+    // console.log(apply({path: 'usersReducer.data'}))
     
     // gunExample()
     return (
@@ -112,8 +96,8 @@ class App extends Component {
           {this.renderForm}
         </Formik>
         <br/><br/>
-        <DataList plan={this.recursiveDisplayPlan()} />
-        {/* <MapPresentation /> */}
+        
+        <DataList />
       </>
     )
   }
