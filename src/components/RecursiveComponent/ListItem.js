@@ -15,12 +15,14 @@ export default class ListItem extends Component {
     return (
       <>
         {/* render list item (local state is changed (true/false) on toggle) */}
-        <a
-          onClick={() => this.setState({ clicked: !this.state.clicked })}
-          style={{ color: this.state.clicked ? 'red' : 'teal' }}
-        >
-          <li key={item.id}>{item.title}</li>
-        </a>
+        <li className={plan.path.slice(0, -12)} key={item.id}>
+          <button
+            onClick={() => this.setState({ clicked: !this.state.clicked })}
+            style={{ color: this.state.clicked ? 'red' : 'teal' }}
+          > {this.state.clicked ? '**' : '>' } </button>
+          <span>{item.title}</span>
+          <button>Edit</button>
+        </li>
 
         {/* recurse if (item is in users/tasks level) and (item is toggled to true) */}
         {plan.children && this.state.clicked &&

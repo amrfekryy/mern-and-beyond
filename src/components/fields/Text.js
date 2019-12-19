@@ -4,10 +4,12 @@ import React, { Component } from 'react'
 export class text extends Component {
   render () {
     return (
-      <input
-        {...this.props.fieldSettingsFromJSON}
-        {...this.props.formikFieldProps}
-      />
+      <div className='text'>
+        <input
+          {...this.props.fieldSettingsFromJSON}
+          {...this.props.formikFieldProps}
+        />
+      </div>
     )
   }
 }

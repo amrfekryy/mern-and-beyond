@@ -51,9 +51,7 @@ class App extends Component {
     // console.log('FormikProps: ', FormikProps)
     return (
       <>
-        <Form>
-          <br />
-
+        <Form id='tasksForm'>
           { // create form dynamically using fileds.json and MiddleComponent
             map(taskFormJSON.default, (fieldSettingsFromJSON, index) => {
               return (
@@ -62,15 +60,16 @@ class App extends Component {
                     // optionsFor='users'
                     selectOptions={this.props.users} 
                     fieldSettingsFromJSON={{...fieldSettingsFromJSON}} 
-                  /><br /><br />
+                  />
                 </>
               )
             })
           }
           {/* <Field type="checkbox" name="active" value="true" checked /> */}
-          <button type='submit'>Add Task</button>
+          <div className='btn'><button type='submit'>Add Task</button></div>
         </Form>
-        <AddSubtaskModal />
+
+        <div className='btn'><AddSubtaskModal /></div>
       </>
     )
   }

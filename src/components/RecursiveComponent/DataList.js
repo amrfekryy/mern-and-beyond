@@ -7,11 +7,9 @@ const jsonPlan = () => ({
   path: 'usersReducer.data',
   children: {
     path: 'tasksReducer.data',
-    key: 'filtering',
     filterKey: 'userID',
     children: {
       path: 'subTasksReducer.data',
-      key: 'filtering',
       filterKey: 'taskID'
     }
   }
@@ -22,7 +20,7 @@ export default class DataList extends Component {
     // get plan through the function for the first time, then through props
     const plan = this.props.plan ? this.props.plan : jsonPlan()
     // get data using the apply funciton
-    const listItems = apply(plan)
+    const listItems = apply({ key: 'filtering', ...plan })
 
     return (
       <ul>

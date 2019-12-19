@@ -4,7 +4,7 @@ import { map } from 'lodash'
 export class select extends Component {
   render () {
     return (
-      <>
+      <div className='select'>
         <label>{this.props.fieldSettingsFromJSON.label} </label>
         <select
           {...this.props.fieldSettingsFromJSON}
@@ -16,7 +16,7 @@ export class select extends Component {
             })
           }
         </select>
-      </>
+      </div>
     )
   }
 }
